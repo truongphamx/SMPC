@@ -4,11 +4,11 @@
 <?php
 session_start();
 $_SESSION['number'] = 0;
-include("delete_modal.php");
-include("storagePrint_modal.php");
-include("storageDelete_modal.php");
-include("replaceAll_modal.php");
-include("clearCurrent_modal.php");
+include("modals/delete_modal.php");
+include("modals/storagePrint_modal.php");
+include("modals/storageDelete_modal.php");
+include("modals/replaceAll_modal.php");
+include("modals/clearCurrent_modal.php");
 ?>
 
 <!-- Jquery -->
