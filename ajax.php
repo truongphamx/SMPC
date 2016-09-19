@@ -24,7 +24,7 @@ $json = json_decode(file_get_contents("http://steamcommunity.com/market/search/r
 if($json["success"] == true OR !empty($json))
   {
     $temp = $json["results_html"];
-    $totalcount = $json["total_count"];
+    $totalcount = $json["pagesize"];
 
   }
   // NEVER SAW IT HAPPEN UNLESS TIMED OUT BUT JUST TO BE SURE
@@ -71,9 +71,12 @@ if($json["success"] == true OR !empty($json))
   $itemnames = array();
 
   // PRINTING THE DATA
+  echo "<br><br>";
   echo "<hr>";
   echo "<ul class=col-md-12>";
+  //  NEEDED?
   if($totalcount > 0){
+    // MAX IS STILL 100
     if($totalcount < $count){
       $count = $totalcount;
     }
@@ -113,9 +116,10 @@ if($json["success"] == true OR !empty($json))
   $_info = array("<input type='checkbox' class='checkBoxes' name='checkBoxArray[]' value=".$_SESSION['number'].$_appid.">","<input type=checkbox name=active class=activator>", "<a href=".$_link.">".$_name."</a>", $_appid, "PH", "<input type=text name=interval>", "<input type=text name=minpricenotifi>","<button name={$_counter} class='btn btn-default' type=button>-</button>");
 
   $i = 0;
-  // NEEDED??
+  // FOR CONVENIENCE
   foreach ($_info as $key => $value) {
       if($i == 1){
+        // MIGHT GET DELETED DURING THE CODE CLEANUP OF INDEX
           echo "<td id=".$_counter.$_appid.">$value</td>";
       }else{
           echo "<td>$value</td>";
