@@ -91,19 +91,14 @@ function replaceAll(){
     localStorage.clear();
     // VARIABLE INITIATION
     var itemsSelector = $('#items').children().eq(1).children();
-    var itemsForReplacement = new Array();
     // LOOPING THROUGH THE LIST AND ADDING THE ITEMS TO STORAGE
-    for(var i = 0; i < itemsSelector.length+1; i++){
-        if(i == 0){
-            // do nothing
-        }else{
-            // less hassle this way and items are remade on the forced reload anyway
-            var specificSelector = itemsSelector.eq(i-1);
-            var name = specificSelector.attr('id');
-            var appid = specificSelector.attr('class');
-            itemsForReplacement[i] = name+appid;
-            localStorage.setItem("item"+i, itemsForReplacement[i]);
-        }
+    for(var i = 0; i < itemsSelector.length; i++){
+
+        var specificSelector = itemsSelector.eq(i);
+        var name = specificSelector.attr('id');
+        var appid = specificSelector.attr('class');
+        localStorage.setItem("item"+i, name+appid);
+
     }
 
 };
@@ -114,14 +109,12 @@ function clearCurrent(){
     // VARIABLE INITIATION
     var itemsSelector = $('#items').children().eq(1).children();
     // LOOPING THROUGH THE LIST AND REMOVING THE ITEMS FROM STORAGE
-    for(var i = 0;s<itemsSelector.length+1; ++i){
-        if(i == 0){
-            // do nothing
-        }else{
-            var specificSelector = itemsSelector.eq(i-1).attr('name');
-            localStorage.removeItem("item"+specificSelector);
-            cnt--;
-        }
+    for(var i = 0;i<itemsSelector.length; ++i){
+
+        var specificSelector = itemsSelector.eq(i).children().eq(7).children().attr('name');
+        localStorage.removeItem("item"+specificSelector);
+        cnt--;
+
     }
 
 };
@@ -131,95 +124,101 @@ function addAll(){
 
     // VARIABLE INITIATION
     var itemsSelector = $('#items').children().eq(1).children();
-    var itemsToAdd = new Array();
-    var lengthFix = itemsSelector.length-2;
     // LOOPING THROUGH THE LIST AND ADDING THE ITEMS TO STORAGE
-    for(var i = 0;i<itemsSelector.length+1; ++i){
-        if(i == 0){
-            // do nothing
-        }else{
-            var specificSelector = itemsSelector.eq(i-1);
-            var name = specificSelector.attr('id');
-            var appid = specificSelector.attr('class');
-            itemsToAdd[i] = name+appid;
-            localStorage.setItem("item"+cnt, itemsToAdd[i]);
-            cnt++;
-        }
+    for(var i = 0;i<itemsSelector.length; ++i){
+
+        var specificSelector = itemsSelector.eq(i);
+        var name = specificSelector.attr('id');
+        var appid = specificSelector.attr('class');
+        localStorage.setItem("item"+cnt, name+appid);
+        cnt++;
+
     }
 
 };
 
 // *** AJAX CALLS ***
 
- function marketSearch(query)
+// SEARCHING FOR ITEMS CALL
+function marketSearch(query)
 {
-    query = document.getElementById("search").value;
-    resultsCount = $('#searchCounter').val();
-    if(query.length > 0){
-        document.getElementById("results").innerHTML = "";
-  xmlhttp=new XMLHttpRequest();
+    // INITIATING THE VARIABLES
+    var query = document.getElementById("search").value;
+    var resultsCount = $('#searchCounter').val();
 
-  xmlhttp.onreadystatechange=function()
-  {
-  if (xmlhttp.readyState==4 && xmlhttp.status==200)
-    {
-        // var newElement = document.createElement('div');
-       document.getElementById("results").innerHTML = xmlhttp.responseText;
-      // document.getElementById("results").appendChild(newElement);
-    }
-  }
-  url = "ajax.php?resultsItem="+query+"&resultsCount="+resultsCount;
-xmlhttp.open("GET",url,true);
-xmlhttp.send();
+    // CHECKING IF THERE'S ACTUALLY ANYTHING TO SEND
+    if(query.length > 0){
+
+        // CLEARING THE PREVIOUS RESULTS
+        document.getElementById("results").innerHTML = "";
+
+        // STANDARD AJAX STUFF
+        xmlhttp=new XMLHttpRequest();
+
+        xmlhttp.onreadystatechange=function()
+        {
+            if (xmlhttp.readyState==4 && xmlhttp.status==200)
+            {
+
+            // DISPLAYING THE RESULTS
+            document.getElementById("results").innerHTML = xmlhttp.responseText;
+
+            }
+        }
+
+        url = "ajax.php?resultsItem="+query+"&resultsCount="+resultsCount;
+        xmlhttp.open("GET",url,true);
+        xmlhttp.send();
     }
 
 }
-var listCnt = 0;
+
+// ADDING THE ITEMS TO THE LIST CALL
 function printItem(name, appid)
 {
 
-  xmlhttp=new XMLHttpRequest();
+    // STANDARD AJAX STUFF
+    xmlhttp=new XMLHttpRequest();
 
-  xmlhttp.onreadystatechange=function()
-  {
-  if (xmlhttp.readyState==4 && xmlhttp.status==200)
+    xmlhttp.onreadystatechange=function()
     {
-        var newElement = document.createElement('tr');
-        newElement.setAttribute("id", name);
-        newElement.setAttribute("class", appid);
-        newElement.setAttribute("name", listCnt);
-        newElement.innerHTML = xmlhttp.responseText;
-      document.getElementsByTagName("tbody")[0].appendChild(newElement);
-      listCnt++;
+        if (xmlhttp.readyState==4 && xmlhttp.status==200)
+        {
+            // CREATING A NEW <TR> AND ADDING IT TO THE LIST
+            var newElement = document.createElement('tr');
+            newElement.setAttribute("id", name);
+            newElement.setAttribute("class", appid);
+            newElement.innerHTML = xmlhttp.responseText;
+            document.getElementsByTagName("tbody")[0].appendChild(newElement);
+        }
     }
-  }
-  url = "ajax.php?PrintName="+name+"&PrintAppid="+appid;
-xmlhttp.open("GET",url,true);
-xmlhttp.send();
-    }
+    url = "ajax.php?PrintName="+name+"&PrintAppid="+appid;
+    xmlhttp.open("GET",url,true);
+    xmlhttp.send();
+}
 
+// CHECKING THE PRICE OF THE ITEM CALL
 function checkPrice(name, appid, currency, number)
 {
-    console.log(number);
-    console.log(name);
-    console.log(appid);
-  xmlhttp=new XMLHttpRequest();
+    // STANDARD AJAX STUFF
+    xmlhttp=new XMLHttpRequest();
 
-  xmlhttp.onreadystatechange=function()
-  {
-  if (xmlhttp.readyState==4 && xmlhttp.status==200)
+    xmlhttp.onreadystatechange=function()
     {
-        var newElement = document.getElementsByName(number);
-        newElement = newElement[0].childNodes[4];
-        newElement.innerHTML = xmlhttp.responseText;
-      // document.getElementById(name).appendChild(newElement);
-    }
-  }
+        if (xmlhttp.readyState==4 && xmlhttp.status==200)
+        {
+            // DISPLAYING THE PRICE
+            var newElement = document.getElementsByName(number);
+            newElement = newElement[0].childNodes[4];
+            newElement.innerHTML = xmlhttp.responseText;
 
-  url = "ajax.php?CheckName="+name+"&CheckAppid="+appid+"&CheckCurrency="+currency;
-xmlhttp.open("GET",url,true);
-xmlhttp.send();
+        }
     }
+
+    url = "ajax.php?CheckName="+name+"&CheckAppid="+appid+"&CheckCurrency="+currency;
+    xmlhttp.open("GET",url,true);
+    xmlhttp.send();
+}
 
 // ***DOM READY***
 var t;
@@ -365,7 +364,6 @@ function deleteItemFromList(sele){
         tr.fadeOut(400, function(){
             tr.remove();
         });
-        listCnt--;
 }
 
 $('#test').on("change", "input:checkbox",function(){
@@ -565,6 +563,7 @@ $('#bulkOptionsApply').on("click", "input", function(){
         for(var i = 0; i < checkBoxes.length; ++i){
         if(checkBoxes[i].checked){
             var selectorActivator = $('.activator').eq(i);
+            var selectorStorage = $('#items').children().eq(1).children().eq(i).children().eq(7).children().attr('name');
              var name = $('#items').children().eq(1).children().eq(i).attr('id');
              var appid = $('#items').children().eq(1).children().eq(i).attr('class');
 
@@ -595,7 +594,7 @@ $('#bulkOptionsApply').on("click", "input", function(){
                     break;
 
                 case "deleteStorage":
-                    deleteItemFromStorage($('#items').children().eq(1).children().eq(i).attr('name'));
+                    deleteItemFromStorage(selectorStorage);
                     $.notify(name+" deleted.",
                     {
                         className:"warn",
@@ -607,7 +606,7 @@ $('#bulkOptionsApply').on("click", "input", function(){
                     selectorActivator.prop('checked', false);
                     selectorActivator.change();
                     deleteItemFromList(selectorActivator);
-                    deleteItemFromStorage($('#items').children().eq(1).children().eq(i).attr('name'));
+                    deleteItemFromStorage(selectorStorage);
                     $.notify(name+" deleted.",
                     {
                         className:"warn",

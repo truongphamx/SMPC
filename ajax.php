@@ -24,7 +24,8 @@ $json = json_decode(file_get_contents("http://steamcommunity.com/market/search/r
 if($json["success"] == true OR !empty($json))
   {
     $temp = $json["results_html"];
-    $totalcount = $json["pagesize"];
+    $totalcount = $json["total_count"];
+    $pagesize = $json["pagesize"];
 
   }
   // NEVER SAW IT HAPPEN UNLESS TIMED OUT BUT JUST TO BE SURE
@@ -74,11 +75,12 @@ if($json["success"] == true OR !empty($json))
   echo "<br><br>";
   echo "<hr>";
   echo "<ul class=col-md-12>";
-  //  NEEDED?
+
+  //  IF ITEMS HAVE BEEN FOUND
   if($totalcount > 0){
     // MAX IS STILL 100
-    if($totalcount < $count){
-      $count = $totalcount;
+    if($pagesize < $count){
+      $count = $pagesize;
     }
     // CASUAL PROCESSING OF THE DATA RECEIVED FROM STEAM
     for ($i = 0; $i < $count; $i++){
@@ -100,6 +102,7 @@ if($json["success"] == true OR !empty($json))
       echo "</li>";
       echo "<hr>";
     }
+  // OTHERWISE LET USER KNOW
   }else{
     echo "<li>".$temp."</li>";
     echo "<hr>";
@@ -118,13 +121,10 @@ if($json["success"] == true OR !empty($json))
   $i = 0;
   // FOR CONVENIENCE
   foreach ($_info as $key => $value) {
-      if($i == 1){
-        // MIGHT GET DELETED DURING THE CODE CLEANUP OF INDEX
-          echo "<td id=".$_counter.$_appid.">$value</td>";
-      }else{
-          echo "<td>$value</td>";
-      }
-      $i++;
+
+    echo "<td>$value</td>";
+    $i++;
+
   }
   $_SESSION['number']++;
 
