@@ -116,7 +116,7 @@ if($json["success"] == true OR !empty($json))
   $_counter = $_SESSION['number'];
   $_link =  "http://steamcommunity.com/market/listings/".$_appid."/".rawurlencode($_name);
   // <TR> WORTH OF DATA
-  $_info = array("<input type='checkbox' class='checkBoxes' name='checkBoxArray[]' value=".$_SESSION['number'].$_appid.">","<input type=checkbox name=active class=activator>", "<a href=".$_link.">".$_name."</a>", $_appid, "PH", "<input type=text name=interval>", "<input type=text name=minpricenotifi>","<button name={$_counter} class='btn btn-default' type=button>-</button>");
+  $_info = array("<input type='checkbox' class='checkBoxes' name='checkBoxArray[]' value=".$_SESSION['number'].$_appid.">","<input type=checkbox name=active class=activator>", "<a href=".$_link.">".$_name."</a>", $_appid, "None", "<input type=text name=interval>", "<input type=text name=minpricenotifi>","<button name={$_counter} class='btn btn-default' type=button>-</button>");
 
   $i = 0;
   // FOR CONVENIENCE

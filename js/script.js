@@ -82,6 +82,77 @@ function myLoop(){
 
 }
 
+// CHECKING THE PRICE AND NOTIFYING THE USER IF IT REACHED DESIRED POINT
+function ringTheBells(selector){
+
+    // INITIAL VARIABLE
+    var check = selector.children('td').eq(6).children();
+
+    // IF CHECK ISN'T EMPTY
+    if(check.val()){
+
+        // INITIATE MORE VARIABLES
+        var price = selector.children('td').eq(4).html();
+        var name = selector.children('td').eq(2).text();
+
+        // WORK THE VARIABLES SO THAT THEY'RE STRIPPED OF NOT NEEDED CHARACTERS AND CONVERTED TO INTERGERS
+        check = check.val();
+        price = price.replace( /[^0-9+,.]/gi, '' );
+        check = check.replace( /,/, '.');
+        check = check.replace( /[^0-9+,.]/, '' );
+        price = Number(price);
+        check = Number(check);
+
+        // CHECK IF THE PRICE HAS REACHED THE DESIRED PRICE
+        if(price <= check){
+            // IF YES, FIRE THE NOTIFICATION AND SOUND
+            $.notify(name+" has reached the desired price",
+            {
+                class:"success",
+                position:"top-right"
+            });
+            document.getElementById('wakemeup').play();
+        }
+
+    // OTHERWISE DON'T DO ANYTHING
+    }else{
+        return;
+    }
+
+}
+// INITIATE THE ARRAYS TO KEEP TRACK OF THE INTERVAL LOOPS
+var myInterval = new Array();
+var notInterval = new Array();
+
+// LOOP FUNCTION TO CHECK THE PRICE AND COMPARE IT WITH THE DESIRED ONE (ONCE)
+function startLoop(id,cls,sele,curr,numb) {
+    // IF FREQUENCY ISN'T SET
+    if(frequency == 0){
+        // CHANGE IT TO 10 SECONDS AND LET THE USER KNOW
+        frequency = 10000;
+        $.notify("Item number "+numb+"'s frequency defaulted to 10s due to lack of frequency.",{position:"top-center",
+            className:"error"});
+    }
+    // FIRE THE PRICE CHECK FUNCTION FOR THE FIRST TIME AND A COMPARE FUNCTION AFTER A SECOND
+    checkPrice(id,cls,curr,numb);
+    setTimeout(function(){
+        ringTheBells(sele)},1000);
+
+    // INITIATE THE LOOP TO CHECK THE PRICE EVERY FREQUENCY VALUE
+    myInterval[numb] = setInterval(function(){
+        checkPrice(id,cls,curr,numb);
+    }, frequency );
+
+
+}
+
+// LOOP FUNCTION TO COMPARE THE CURRENT PRICE WITH THE DESIRED ONE
+function startNotification(int,sele){
+    notInterval[int] = setInterval(function(){
+        ringTheBells(sele);
+    }, frequency );
+}
+
 // ***NAVBAR BUTTONS FUNCTIONS***
 
 // REPLACE ALL ITEMS WITH THE CURRENT LIST
@@ -188,6 +259,7 @@ function printItem(name, appid)
             var newElement = document.createElement('tr');
             newElement.setAttribute("id", name);
             newElement.setAttribute("class", appid);
+            newElement.setAttribute("name", $('#items').children().eq(1).children().length);
             newElement.innerHTML = xmlhttp.responseText;
             document.getElementsByTagName("tbody")[0].appendChild(newElement);
         }
@@ -223,32 +295,48 @@ function checkPrice(name, appid, currency, number)
 // ***DOM READY***
 var t;
 $(document).ready(function() {
+
+    // SETTING THE DEFAULT NOTIFICATION CLASS
     $.notify.defaults({ className: "success" });
-    search = $('#search').val();
+
+    // SEARCH FUNCTION
     $('#search').keyup(function() {
+
+        // INITIATING THE DELAY
         clearTimeout (t);
+        t = setTimeout('marketSearch()', 1000);
 
-        t = setTimeout('marketSearch(search)', 1000);
+        // IF THE SEARCH FIELD IS EMPTY SIMPLY CLEAN THE RESULTS
+        if($('#search').val().length == 0){
+            document.getElementById("results").innerHTML = "";
+        }
 
-    if(search.length == 0){
-        document.getElementById("results").innerHTML = "";
-    }
-    setTimeout(function(){
+        // REFRESH THE COLORS OF THE BUTTONS FOR AUTO STORAGE
+        setTimeout(function(){
+            // CHECK IF AUTO STORAGE IS ON
             if($('#auto').is(':checked')){
-        $('#results').find("button").switchClass("btn-default","btn-success", 1000, "easeInOutQuad");
-        $('#items').find("button").switchClass("btn-default","btn-danger", 1000, "easeInOutQuad");
-    }else{
-        $('#results').find("button").switchClass("btn-success","btn-default", 1000, "easeInOutQuad");
-        $('#items').find("button").switchClass("btn-danger","btn-default", 1000, "easeInOutQuad");
-    }
-}, 2000);
+                // IF IT IS, SWITCH THE CLASSES TO REFLECT AUTO STORAGE
+                $('#results').find("button").switchClass("btn-default","btn-success", 1000, "easeInOutQuad");
+                $('#items').find("button").switchClass("btn-default","btn-danger", 1000, "easeInOutQuad");
+            }else{
+                // IF NOT, SWITCH TO DEFAULT BUTTONS
+                $('#results').find("button").switchClass("btn-success","btn-default", 1000, "easeInOutQuad");
+                $('#items').find("button").switchClass("btn-danger","btn-default", 1000, "easeInOutQuad");
+            }
+        }, 2000);
 
     });
+
+    // STORAGE RELATED INITIATION
     checkStorage();
     cntCheck();
+
+    // IF AT LEAST ONE STORED ITEM
     if(storedItems[0]){
-        var item = $(this);
+
+        // ASK THE USER WHETHER HE WANTS TO USE THE STORED ITEMS
         $(".modal_print_link").on("click", function(){
+            // ON YES PRINT THE LIST AND LET THE USER KNOW IT'S BEING PRINTED
             $("#modal-print-confirmation").html('Printing the items, please wait...');
             $("#modal-print-buttons").children().remove();
             StorageData();
@@ -258,93 +346,49 @@ $(document).ready(function() {
         $("#storagePrintModal").modal('show');
     }
 
+    // ***ON CHANGE/CLICK EVENTS***
+
+    // ACTIVATE THE PRICE CHECK
+
+    // ON CHECKING THE "CHECK THE PRICE " CHECKBOX
+    $('#items').on('change', '.activator', function(){
+
+        // INITIATE THE VARIABLES
+        var selector = $(this).parent().parent();
+        var id = selector.attr('id');
+        var cls = selector.attr('class');
+        var numb = selector.attr('name');
+
+        // AS LONG AS THE CHECKBOX IS CHECKED
+        if ($(this).is(':checked')) {
+            // INITIATE MORE VARIABLES
+            var currency = $("#currency :selected").val();
+            frequency = selector.children('td').eq(5).children().val();
+            frequency = frequency*1000;
+            myInterval[numb] = numb;
+            notInterval[numb] = numb;
+
+            // START THE PRICE CHECK LOOP AND THEN THE PRICE COMPARE A SECOND AFTER THAT
+            startLoop(id, cls, selector,currency, numb);
+            setTimeout(function(){
+                startNotification(numb,selector);
+            }, 1000);
+
+        // OTHERWISE
+          } else {
+            // CLEAR THE LOOPS
+            clearInterval(myInterval[numb]);
+            clearInterval(notInterval[numb]);
+
+          }
 
 
-});
-
-
-
-function ringTheBells(sel){
-    check = sel.children('td').eq(6).children();
-    if(check.val()){
-        price = sel.children('td').eq(4).html();
-        check = check.val();
-        name = sel.children('td').eq(2).text();
-        price = price.replace( /[^0-9+,.]/gi, '' );
-        check = check.replace( /[^0-9+,.]/, '' );
-        // var s = price+check;
-        // var matches = s.match(/^\s\d*.\d*/);
-        // price = matches[1];
-        // check = matches[2];
-        console.log(price);
-        console.log(check);
-        if(price <= check){
-            $.notify(name+" has reached the desired price",
-            {
-                class:"success",
-                position:"top-right"
-            });
-            document.getElementById('wakemeup').play();
-        }
-    }else{
-        return;
-    }
-
-}
-var myInterval = new Array();
-var notInterval = new Array();
-
-$('#items').on('change', '.activator', function(){
-
-    number = $(this).parent().parent().children('td').eq(7).children().attr('name');
-    if ($(this).is(':checked')) {
-        selector = $(this).parent().parent();
-        id = selector.attr('id');
-        cls = selector.attr('class');
-        numb = selector.attr('name');
-        frequency = selector.children('td').eq(5).children().val();
-        frequency = frequency*1000;
-        myInterval[number] = number;
-        notInterval[number] = number;
-        currency = $("#currency :selected").val();
-        startLoop(myInterval[number],id, cls, selector,currency, numb);
-        setTimeout(function(){
-            startNotification(notInterval[number] = number,selector);
-        }, 1000);
-
-
-
-      } else {
-
-        clearInterval(myInterval[number]);
-        clearInterval(notInterval[number]);
-
-      }
-    function startLoop(int,id,cls,sele,curr,numb) {
-    if(frequency == 0){
-        frequency = 10000;
-        $.notify("Item number "+numb+"'s frequency defaulted to 10s due to lack of frequency.",{position:"top-center",
-            className:"error"});
-
-    }
-    checkPrice(id,cls,curr,numb);
-    setTimeout(function(){
-        ringTheBells(sele)},1000);
-
-    myInterval[int] = setInterval(function(){
-        checkPrice(id,cls,curr,numb);
-    }, frequency );
-
-
-}
-
-function startNotification(int,sele){
-    notInterval[int] = setInterval(function(){
-        ringTheBells(sele);
-    }, frequency );
-}
+    });
 
 });
+// END OF ON DOCUMENT READY
+
+
 var items = new Array();
 
 
