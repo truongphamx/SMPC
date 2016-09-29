@@ -82,6 +82,40 @@ function myLoop(){
 
 }
 
+// LOOP MADE TO SEPARATE EXECUTING BULK PRICE CHECK WITHOUT BLOATING THE SWITCH
+function myDelay(){
+    // INITIATE THE VARIABLES
+    var checkBoxes = $('.checkBoxes');
+    var checkedCheckBoxes = $('.checkBoxes:checked').length;
+
+    setTimeout(function(){
+        // FOR EVERY CHECKED BOX
+        if(checkBoxes[c].checked){
+            // INITIATE THE VARIABLES
+            var selectorActivator = $('.activator').eq(c);
+            var name = $('#items').children().eq(1).children().eq(c).attr('id');
+            var appid = $('#items').children().eq(1).children().eq(c).attr('class');
+
+            // IF THEY AREN'T ACTIVATED YET, ACTIVATE THEM
+            if(!selectorActivator.prop('checked')){
+                selectorActivator.prop('checked', true);
+                selectorActivator.change();
+            }
+
+        }
+
+        // LOOP TILL NOTHING ELSE TO CHECK
+        if(c<checkedCheckBoxes-1){
+            myDelay();
+            c++;
+        }else{
+            c=0;
+        }
+
+    }, 1000);
+
+}
+
 // CHECKING THE PRICE AND NOTIFYING THE USER IF IT REACHED DESIRED POINT
 function ringTheBells(selector){
 
@@ -208,6 +242,46 @@ function addAll(){
 
 };
 
+// ***STORAGE/LIST FUNCTIONS***
+
+// ARRAY TO HOLD THE ITEMS
+var items = new Array();
+
+// STORING THE ITEMS IN THE STORAGE
+function storeMyPain(counter){
+    localStorage.setItem("item"+counter, items[counter]);
+}
+
+// DELETING THE ITEMS FROM THE STORAGE
+function deleteItemFromStorage(counter){
+    localStorage.removeItem("item"+counter);
+}
+
+// DELETING THE ITEMS FROM THE LIST
+function deleteItemFromList(sele){
+        var tr = sele.closest('tr');
+        tr.css("background-color","#FF3700");
+        tr.fadeOut(400, function(){
+            tr.remove();
+        });
+}
+
+// *** BUTTONS STYLES ***
+
+// AUTO STORAGE ON
+function lightsOn(){
+    $('#results').find("button").switchClass("btn-default","btn-success", 1000, "easeInOutQuad");
+    $('#items').find("button").switchClass("btn-default","btn-danger", 1000, "easeInOutQuad");
+    $('#addUrlApply').find("button").switchClass("btn-info","btn-success", 1000, "easeInOutQuad");
+}
+
+// AUTO STORAGE OFF
+function lightsOut(){
+    $('#results').find("button").switchClass("btn-success","btn-default", 1000, "easeInOutQuad");
+    $('#items').find("button").switchClass("btn-danger","btn-default", 1000, "easeInOutQuad");
+    $('#addUrlApply').find("button").switchClass("btn-success","btn-info", 1000, "easeInOutQuad");
+}
+
 // *** AJAX CALLS ***
 
 // SEARCHING FOR ITEMS CALL
@@ -316,12 +390,10 @@ $(document).ready(function() {
             // CHECK IF AUTO STORAGE IS ON
             if($('#auto').is(':checked')){
                 // IF IT IS, SWITCH THE CLASSES TO REFLECT AUTO STORAGE
-                $('#results').find("button").switchClass("btn-default","btn-success", 1000, "easeInOutQuad");
-                $('#items').find("button").switchClass("btn-default","btn-danger", 1000, "easeInOutQuad");
+                lightsOn();
             }else{
                 // IF NOT, SWITCH TO DEFAULT BUTTONS
-                $('#results').find("button").switchClass("btn-success","btn-default", 1000, "easeInOutQuad");
-                $('#items').find("button").switchClass("btn-danger","btn-default", 1000, "easeInOutQuad");
+                lightsOut();
             }
         }, 2000);
 
@@ -385,290 +457,332 @@ $(document).ready(function() {
 
     });
 
-});
-// END OF ON DOCUMENT READY
+    // STORING THE ITEMS
+    $('#test').on("change", "input:checkbox",function(){
 
-
-var items = new Array();
-
-
-function storeMyPain(counter){
-    // localStorage.items[counter] = items[counter];
-    localStorage.setItem("item"+counter, items[counter]);
-}
-
-function deleteItemFromStorage(counter){
-    localStorage.removeItem("item"+counter);
-    // cnt--;
-}
-
-function deleteItemFromList(sele){
-        var tr = sele.closest('tr');
-        tr.css("background-color","#FF3700");
-        tr.fadeOut(400, function(){
-            tr.remove();
-        });
-}
-
-$('#test').on("change", "input:checkbox",function(){
-
+    // IF AUTO STORAGE IS CHECKED
     if($('#auto').is(':checked')){
-        $('#results').find("button").switchClass("btn-default","btn-success", 1000, "easeInOutQuad");
-        $('#items').find("button").switchClass("btn-default","btn-danger", 1000, "easeInOutQuad");
-        $('#addUrlApply').find("button").switchClass("btn-info","btn-success", 1000, "easeInOutQuad");
-     var t = $('#results').on("click", "button", function(){
-         name = $(this).attr('name');
-         appid = $(this).attr('class').split(' ')[2];
-         items[cnt] = name+appid;
+        // SWITCH THE BUTTONS TO REFLECT THE AUTO STORAGE
+        lightsOn();
 
-         storeMyPain(cnt);
-         cnt++;
-         setTimeout(function(){
-            if($('#auto').is(':checked')){
-        $('#results').find("button").switchClass("btn-default","btn-success", 1000, "easeInOutQuad");
-        $('#items').find("button").switchClass("btn-default","btn-danger", 1000, "easeInOutQuad");
+        // EXECUTE THE STORAGE FUNCTIONS
+        var t = $('#results').on("click", "button", function(){
+            // INITIATE THE VARIABLES
+            var name = $(this).attr('name');
+            var appid = $(this).attr('class').split(' ')[2];
+            // ADD THE NAME AND THE APPID TO THE ITEMS ARRAY TO LATER ADD IT TO THE STORAGE
+            items[cnt] = name+appid;
 
-    }else{
-        $('#results').find("button").switchClass("btn-success","btn-default", 1000, "easeInOutQuad");
-        $('#items').find("button").switchClass("btn-danger","btn-default", 1000, "easeInOutQuad");
-    }
-}, 1000);
-     });
- }else{
-    $('#results').off("click", "button", t);
-    $('#results').find("button").switchClass("btn-success","btn-default", 1000, "easeInOutQuad");
-    $('#items').find("button").switchClass("btn-danger","btn-default", 1000, "easeInOutQuad");
-    $('#addUrlApply').find("button").switchClass("btn-success","btn-info", 1000, "easeInOutQuad");
- }
-});
+            // STORE THE ITEM AND INCREMENT THE COUNTER
+            storeMyPain(cnt);
+            cnt++;
 
+            // MAKE SURE THE NEWLY ADDED ITEM HAS CORRECTLY STYLED BUTTONS
+            setTimeout(function(){
+                if($('#auto').is(':checked')){
+                    lightsOn();
 
+                }else{
+                    lightsOut();
+                }
+            }, 1000);
 
-$('#items').on("click", "button", function(){
-    var cont = $(this).attr('name');
-    var selecActi = $(this).parent().parent().children().eq(1).children().eq(0);
-    if($('#auto').is(':checked')){
-        var item = $(this);
+         });
 
-        $(".modal_delete_link").on("click", function(){
-            deleteItemFromStorage(item.attr('name'));
-        });
-        $(".modal_delete_link").on("click", function(){
+     }else{
+        // DON'T EXECUTE THE STORAGE FUNCTIONS
+        $('#results').off("click", "button", t);
+        lightsOut();
+     }
+
+    });
+
+    // DELETING THE ITEMS FROM THE LIST
+    $('#items').on("click", "button", function(){
+
+        // INITIATING THE VARIABLES
+        var cont = $(this).attr('name');
+        var selecActi = $(this).parent().parent().children().eq(1).children().eq(0);
+
+        // IF AUTO STORAGE IS ON
+        if($('#auto').is(':checked')){
+
+            // DELETE THE ITEM FROM THE STORAGE ON DELETE
+            $(".modal_delete_link").on("click", function(){
+                deleteItemFromStorage($(this).attr('name'));
+            });
+
+            // UNCHECK THE CHECKBOX TO DEACTIVATE THE PRICE CHECKER AND DELETE IT FROM THE LIST ON DELETE
+            $(".modal_delete_link").on("click", function(){
+                selecActi.prop('checked', false);
+                selecActi.change();
+                deleteItemFromList($(this));
+            });
+
+            // SHOW THE MODAL TO CONFIRM
+            $("#singleDeleteModal").modal('show');
+
+        // OTHERWISE
+        }else{
+            // UNCHECK THE CHECKBOX TO DEACTIVATE THE PRICE CHECKER AND DELETE IT FROM THE LIST
             selecActi.prop('checked', false);
             selecActi.change();
-            deleteItemFromList(item);
-        });
-        $("#singleDeleteModal").modal('show');
-
-    }else{
-        selecActi.prop('checked', false);
-        selecActi.change();
-        deleteItemFromList($(this));
-    }
-});
-
-$('#addUrlApply').on("click", "button", function(){
-    var link = $(this).parent().parent().children().eq(0).children().val();
-    var name = link.slice(46);
-    var appid = link.slice(42,45);
-    if(link != ""){
-        if($('#auto').is(':checked')){
-             items[cnt] = name+appid;
-
-             storeMyPain(cnt);
-             cnt++;
-            printItem(name,appid);
-            // $(".modal_delete_link").on("click", function(){
-            //     deleteItemFromStorage(item.attr('name'));
-            // });
-
-        }else{
-            printItem(name,appid);
+            deleteItemFromList($(this));
         }
-    }
+    });
 
-});
+    // ADDING ITEMS WITH THE USAGE OF URL
+    $('#addUrlApply').on("click", "button", function(){
+        // INITIATING THE VARIABLES
+        var link = $(this).parent().parent().children().eq(0).children().val();
+        var name = link.slice(46);
+        var appid = link.slice(42,45);
 
-$('th').on("change", "input:checkbox", function(event){
+        // CHECK IF THERE'S ANYTHING IN THE LINK FIELD
+        if(link != ""){
+            // IF THERE IS AND AUTO IS CHECKED
+            if($('#auto').is(':checked')){
+
+                // ADD THE ITEM TO THE ITEMS ARRAY
+                items[cnt] = name+appid;
+
+                // STORE IT IN THE LOCALSTORAGE AND INCREMENT THE COUNTER
+                storeMyPain(cnt);
+                cnt++;
+
+                // PRINT IT TO THE LIST
+                printItem(name,appid);
+
+            // OTHERWISE
+            }else{
+                // JUST PRINT THE ITEM TO THE LIST
+                printItem(name,appid);
+            }
+        }
+
+    });
+
+    // BULK CHECK
+    $('th').on("change", "input:checkbox", function(event){
+        // CHECK THE BOXES
         if($(this).is(':checked')){
             $('.checkBoxes').each(function(){
                 this.checked = true;
             });
-        } else{
+        // UNCHECK THE BOXES
+        }else{
             $('.checkBoxes').each(function(){
                 this.checked = false;
             });
         }
     });
 
-$('#buttons').on("click", "#storageClear", function(){
+    // CLEARING THE STORAGE
+    $('#buttons').on("click", "#storageClear", function(){
 
-    $(".modal_delete_all_link").on("click", function(){
-        localStorage.clear();
-        $("#modal-delete-all-confirmation").html('Storage cleared.');
-        setTimeout(function(){
-            $("#storageDeleteModal").modal('hide')},
-        1000);
-        setTimeout(function(){
-            $("#modal-delete-all-confirmation").html('Are you sure you want to do that?')},
-        2000);
+        // ON DELETE
+        $(".modal_delete_all_link").on("click", function(){
+
+            // CLEAR THE STORAGE
+            localStorage.clear();
+
+            // LET THE USER KNOW IT HAS BEEN CLEARED
+            $("#modal-delete-all-confirmation").html('Storage cleared.');
+
+            // HIDE IT
+            setTimeout(function(){
+                $("#storageDeleteModal").modal('hide')},
+            1000);
+
+            // ASK THE USER IF HE ACTUALLY WANTS TO CLEAR IT
+            setTimeout(function(){
+                $("#modal-delete-all-confirmation").html('Are you sure you want to do that?')},
+            2000);
 
         });
 
+        // SHOW THE MODAL
         $("#storageDeleteModal").modal('show');
-});
 
-$('#buttons').on("click", "#storageReplace", function(){
+    });
 
-    $(".modal_replace_all_link").on("click", function(){
-        replaceAll();
-        $("#modal-replace-all-confirmation").html('Storage replaced. The page will reload shortly.');
-        setTimeout(function(){
-            $("#replaceAllModal").modal('hide');
-            window.location.reload();},
-        1500);
+    // REPLACING THE STORAGE
+    $('#buttons').on("click", "#storageReplace", function(){
 
+        // ON REPLACE
+        $(".modal_replace_all_link").on("click", function(){
+
+            // REPLACE IT
+            replaceAll();
+
+            // LET THE USER KNOW AND RELOAD THE PAGE TO PREVENT STORAGE ISSUES
+            $("#modal-replace-all-confirmation").html('Storage replaced. The page will reload shortly.');
+
+            setTimeout(function(){
+                $("#replaceAllModal").modal('hide');
+                window.location.reload();},
+            1500);
 
         });
 
+        // SHOW THE MODAL
         $("#replaceAllModal").modal('show');
-});
 
-$('#buttons').on("click", "#storageAddAll", function(){
+    });
 
+    // ADDING THE CURRENT LIST TO THE STORAGE
+    $('#buttons').on("click", "#storageAddAll", function(){
+        // ADD EVERYTHING
         addAll();
+
+        // NOTIFY THE USER
         $.notify("Items added.",
-            {
-                class:"success",
-                position:"top-center"
-            });
+        {
+            class:"success",
+            position:"top-center"
+        });
 
-});
+    });
 
-$('#buttons').on("click", "#clearCurrent", function(){
+    // CLEARING THE CURRENT LIST FROM THE STORAGE
+    $('#buttons').on("click", "#clearCurrent", function(){
 
-    $(".modal_clear_current_link").on("click", function(){
-        clearCurrent();
-        $("#modal-clear-current-confirmation").html('Items cleared from the storage');
-        setTimeout(function(){
-            $("#storageClearCurrentModal").modal('hide')},
-        1000);
-        setTimeout(function(){
-            $("#modal-clear-current-confirmation").html('Are you sure you want to do that?')},
-        2000);
+        // ON CLEAR CURRENT
+        $(".modal_clear_current_link").on("click", function(){
+
+            // CLEAR IT
+            clearCurrent();
+
+            // LET THE USER KNOW
+            $("#modal-clear-current-confirmation").html('Items cleared from the storage');
+
+            // HIDE THE MODAL
+            setTimeout(function(){
+                $("#storageClearCurrentModal").modal('hide')},
+            1000);
+
+            // ASK TO CONFIRM
+            setTimeout(function(){
+                $("#modal-clear-current-confirmation").html('Are you sure you want to do that?')},
+            2000);
 
         });
 
+        // SHOW THE MODAL
         $("#storageClearCurrentModal").modal('show');
-});
-function myDelay(){
-    setTimeout(function(){
-        // for(var o = 0; o<itemCounter; ++o){
-            // console.log(itemNames[o]+"   "+itemAppids[o]);
-            if(checkBoxes[c].checked){
-            var selectorActivator = $('.activator').eq(c);
-             var name = $('#items').children().eq(1).children().eq(c).attr('id');
-             var appid = $('#items').children().eq(1).children().eq(c).attr('class');
+    });
 
-            if(!selectorActivator.prop('checked')){
-                selectorActivator.prop('checked', true);
-                selectorActivator.change();
+    // BULK OPTIONS EXECUTION
+    $('#bulkOptionsApply').on("click", "input", function(){
+        // INITIATE THE VARIABLES
+        var checkBoxes = $('.checkBoxes');
+        var checkedCheckBoxes = $('.checkBoxes:checked').length;
+        var option = $("#bulkOptionContainer :selected").val();
+        c = 0;
+
+        // IN CASE OF ACTIVATE
+        if(option == "activate"){
+        // ACTIVATE EVERYTHING USING A DELAYED LOOP
+        myDelay();
+
+        // OTHERWISE JUST USE A SWITCH
+        }else{
+
+            // LOOP THROUGH CHECKED BOXES
+            for(var i = 0; i < checkBoxes.length; ++i){
+
+                // IF THEY'RE CHECKED
+                if(checkBoxes[i].checked){
+
+                    // INITIATE THE VARIABLES
+                    var selectorActivator = $('.activator').eq(i);
+                    var selectorStorage = $('#items').children().eq(1).children().eq(i).children().eq(7).children().attr('name');
+                    var name = $('#items').children().eq(1).children().eq(i).attr('id');
+                    var appid = $('#items').children().eq(1).children().eq(i).attr('class');
+
+                    // SWITCH BASED ON THE SELECTED OPTION
+                    switch(option){
+
+                        // IN CASE OF DEACTIVATE
+                        case "deactivate":
+                            // UNCHECK ALL THE ITEMS
+                            selectorActivator.prop('checked', false);
+                            selectorActivator.change();
+                            break;
+
+                        // IN CASE OF DELETE FROM THE LIST
+                        case "deleteList":
+                            // UNCHECK AND DELETE
+                            selectorActivator.prop('checked', false);
+                            selectorActivator.change();
+                            deleteItemFromList(selectorActivator);
+                            break;
+
+                        // IN CASE OF ADD TO STORAGE
+                        case "addStorage":
+
+                            // ADD THE ITEM TO THE ITEMS ARRAY
+                            items[cnt] = name+appid;
+
+                            // STORE IT IN THE LOCALSTORAGE AND INCREMENT THE COUNTER
+                            storeMyPain(cnt);
+                            cnt++;
+
+                            // NOTIFY THE USER
+                            $.notify(name+" added.",
+                            {
+                                class:"success",
+                                position:"top-center"
+                            });
+
+                            break;
+
+                        // IN CASE OF DELETE FROM STORAGE
+                        case "deleteStorage":
+                            // DELETE FROM STORAGE AND NOTIFY THE USER
+                            deleteItemFromStorage(selectorStorage);
+                            $.notify(name+" deleted.",
+                            {
+                                className:"warn",
+                                position:"top-center"
+                            });
+                            break;
+
+                        // IN CASE OF DELETE FROM STORAGE AND LIST
+                        case "deleteStorageAndList":
+                            // DEACTIVATE THE PRICE CHECK
+                            selectorActivator.prop('checked', false);
+                            selectorActivator.change();
+
+                            // DELETE FROM THE LIST AND THE STORAGE
+                            deleteItemFromList(selectorActivator);
+                            deleteItemFromStorage(selectorStorage);
+
+                            // NOTIFY THE USER
+                            $.notify(name+" deleted.",
+                            {
+                                className:"warn",
+                                position:"top-center"
+                            });
+                            break;
+
+                        default:
+
+                        break;
+                    }
+                }
             }
-
-
-
-
         }
-            // cnt++;
+    });
 
+    // INFO ABOUT THE COUNTER ON HOVER
+    $("#searchCounter").hover(function(event) {
+        $("#spookyDiv").show();
+    }, function() {
+        $("#spookyDiv").hide();
+    });
 
-            if(c<checkedCheckBoxes){
-                myDelay();
-                c++;
-            }else{
-                c=0;
-            }
-
-
-        // }
-    }, 1000);
-
-}
-$('#bulkOptionsApply').on("click", "input", function(){
-    checkBoxes = $('.checkBoxes');
-    checkedCheckBoxes = $('.checkBoxes:checked').length;
-    option = $("#bulkOptionContainer :selected").val();
-    c = 0;
-    if(option == "activate"){
-
-
-    myDelay();
-    }else{
-        for(var i = 0; i < checkBoxes.length; ++i){
-        if(checkBoxes[i].checked){
-            var selectorActivator = $('.activator').eq(i);
-            var selectorStorage = $('#items').children().eq(1).children().eq(i).children().eq(7).children().attr('name');
-             var name = $('#items').children().eq(1).children().eq(i).attr('id');
-             var appid = $('#items').children().eq(1).children().eq(i).attr('class');
-
-             switch(option){
-
-                case "deactivate":
-                    selectorActivator.prop('checked', false);
-                    selectorActivator.change();
-                    break;
-
-                case "deleteList":
-                    selectorActivator.prop('checked', false);
-                    selectorActivator.change();
-                    deleteItemFromList(selectorActivator);
-                    break;
-
-                case "addStorage":
-
-                     items[cnt] = name+appid;
-
-                     storeMyPain(cnt);
-                     cnt++;
-                    $.notify(name+" added.",
-                    {
-                        class:"success",
-                        position:"top-center"
-                    });
-                    break;
-
-                case "deleteStorage":
-                    deleteItemFromStorage(selectorStorage);
-                    $.notify(name+" deleted.",
-                    {
-                        className:"warn",
-                        position:"top-center"
-                    });
-                    break;
-
-                case "deleteStorageAndList":
-                    selectorActivator.prop('checked', false);
-                    selectorActivator.change();
-                    deleteItemFromList(selectorActivator);
-                    deleteItemFromStorage(selectorStorage);
-                    $.notify(name+" deleted.",
-                    {
-                        className:"warn",
-                        position:"top-center"
-                    });
-                    break;
-
-                default:
-
-                break;
-            }
-        }
-    }
-}
 });
+// END OF ON DOCUMENT READY
 
-$("#searchCounter").hover(function(event) {
-    $("#spookyDiv").show();
-}, function() {
-    $("#spookyDiv").hide();
-});
+

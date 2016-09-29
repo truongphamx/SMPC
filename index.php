@@ -9,6 +9,7 @@ include("modals/storagePrint_modal.php");
 include("modals/storageDelete_modal.php");
 include("modals/replaceAll_modal.php");
 include("modals/clearCurrent_modal.php");
+include("modals/info_modal.php");
 ?>
 
 <!-- Jquery -->
@@ -132,12 +133,12 @@ input{
 </head>
 <body>
 <audio id="wakemeup" src="audio/icantwakeup.mp3" preload=auto></audio>
-<nav class="navbar navbar-inverse navbar-static-top">
+<nav class="navbar navbar-inverse navbar-fixed-top">
     <div id="buttons" class="container-fluid navbar-left">
         <button type="button" id="storageReplace"  class="btn btn-primary navbar-btn">Replace the Storage</button>
         <button type="button" id="storageAddAll" class="btn btn-success navbar-btn">Add current list to the Storage</button>
         <button type="button" id="storageClear" class="btn btn-danger navbar-btn">Clear the Storage</button>
-        <button type="button" id="clearCurrent" class="btn btn-warning navbar-btn">Clear current list from the storage</button>
+        <button type="button" id="clearCurrent" class="btn btn-warning navbar-btn">Clear current list from the Storage</button>
     </div>
     <div class="form-group col-sm-1 navbar-left btn">
         <div id="test" class="checkbox input-group checkbox-inline">

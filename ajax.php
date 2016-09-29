@@ -28,7 +28,7 @@ if($json["success"] == true OR !empty($json))
     $pagesize = $json["pagesize"];
 
   }
-  // NEVER SAW IT HAPPEN UNLESS TIMED OUT BUT JUST TO BE SURE
+  // NEVER SAW IT HAPPEN BUT JUST TO BE SURE
   elseif($json["success"] == false OR empty($json))
   {
       echo "Could not get data for ".$item;
