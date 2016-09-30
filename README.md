@@ -1,7 +1,10 @@
 # ${1:Project Name}
 Steam Market Price Checker - all your items in one tab
+
 ![home](https://i.gyazo.com/7e4bd396041d35b2ed953fad2d62ba4d.png)
+
 ![functioningHome](https://i.gyazo.com/d4448936f6ec2a762fb6807d5d0db8bb.png)
+
 ## Installation
 Simply clone it and put on your (remote/local/standard) server.
 ## Usage
@@ -18,5 +21,6 @@ Full How-To available in the app itself. "Help" is what you want to click.
 2. Contribute in any way you want.
 ## History
 30/09/16 - Release.
+
 ## License
 MIT
