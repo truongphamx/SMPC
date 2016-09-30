@@ -1,5 +1,5 @@
-# ${1:Project Name}
-Steam Market Price Checker - all your items in one tab
+# Steam Market Price Checker
+All your items in one tab
 
 ![home](https://i.gyazo.com/7e4bd396041d35b2ed953fad2d62ba4d.png)
 
