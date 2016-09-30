@@ -146,6 +146,9 @@ input{
             <label for="auto">Auto Storage</label>
         </div>
     </div>
+    <div id="infoBTN" class="container-fluid navbar-right">
+        <button type="button" id="infoShow" class="btn btn-default navbar-btn" onClick="$('#infoModal').modal('show');">Help</button>
+    </div>
     <div class="form-group col-sm-1 navbar-right navbar-btn">
         <select id="currency" class="form-control">
             <option value="1">USD</option>

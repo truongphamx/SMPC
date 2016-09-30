@@ -19,6 +19,8 @@
         "Add current list to the Storage" is again, self explanatory and so is the "Clear the storage".
         "Clear the current list from the Storage" will clear the storage off of items that are currently on the list.</p>
         <p class="text-center">Due to Steam Market servers being trigger happy with time outs I suggest setting the Frequency to something around 10 seconds and not pinging many items at the same time.</p>
+        <p class="text-center">Feel free to edit stuff around, although the only thing that comes to my mind other than design would be the audio clip used when firing the notifications. Line #135 in index.php is where you want to look at.</p>
+        <p class="text-center">Please report all the encountered bugs <a href="https://github.com/Extinox/SMPC/issues">HERE</a> (suggestions are welcomed too).</p>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>

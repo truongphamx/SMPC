@@ -374,7 +374,7 @@ $(document).ready(function() {
     $.notify.defaults({ className: "success" });
 
     // SEARCH FUNCTION
-    $('#search').keyup(function() {
+    $('#search, #searchCounter').keyup(function() {
 
         // INITIATING THE DELAY
         clearTimeout (t);
