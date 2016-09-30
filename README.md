@@ -19,6 +19,7 @@ Full How-To available in the app itself. "Help" is what you want to click.
 ## Contributing
 1. Fork it!
 2. Contribute in any way you want.
+
 ## History
 30/09/16 - Release.
 
