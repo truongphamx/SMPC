@@ -6,7 +6,7 @@ All your items in one tab
 ![functioningHome](https://i.gyazo.com/d4448936f6ec2a762fb6807d5d0db8bb.png)
 
 ## Installation
-Simply clone it and put on your (remote/local/standard) server.
+Simply clone it and put on your (remote/local) server.
 ## Usage
 Long story short you search for the items or add them using the Add By URL option. You can then ping the Steam Market servers to get the current lowest price of said items every "Frequency" value. You can also set up notifications by inputting your desired price in "Minimum Notification Price". When the current price reaches or gets below that value, you get notified.
 
