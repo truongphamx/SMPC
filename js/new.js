@@ -75,11 +75,11 @@ function myLoop(){
         }else{
             setTimeout(function(){
                 $("#storagePrintModal").modal('hide')
-            },100);
+            },500);
 
         }
 
-    }, 100);
+    }, 500);
 
 }
 
@@ -255,7 +255,7 @@ function printItem(name, appid)
     newElement.setAttribute("id", name);
     newElement.setAttribute("class", appid);
     newElement.setAttribute("name", $('#items').children().eq(1).children().length);
-    var canIReally = "<td><input type='checkbox' class='checkBoxes' name='checkBoxArray[]' value="+canIReallyANumber+appid+"></td><td><input type=checkbox name=active class=activator></td><td><a href=http://steamcommunity.com/market/listings/"+appid+"/"+name+">"+decodeURI(name)+"</a></td><td>"+appid+"</td><td>None</td><td><input type=text name=interval></td><td><input type=text name=minpricenotifi></td><td><button name="+canIReallyANumber+" class='btn btn-default' type=button>-</button></td>";
+    var canIReally = "<td><input type='checkbox' class='checkBoxes' name='checkBoxArray[]' value="+canIReallyANumber+appid+"></td><td><input type=checkbox name=active class=activator></td><td><a href=http://steamcommunity.com/market/listings/"+appid+"/"+name+">"+name+"</a></td><td>"+appid+"</td><td>None</td><td><input type=text name=interval></td><td><input type=text name=minpricenotifi></td><td><button name="+canIReallyANumber+" class='btn btn-default' type=button>-</button></td>";
     newElement.innerHTML = canIReally;
     document.getElementsByTagName("tbody")[0].appendChild(newElement);
     canIReallyANumber++;
@@ -359,7 +359,6 @@ function marketSearch(query)
                 document.getElementById("results").style.fontSize="29px";
                 document.getElementById("results").innerHTML = response.results_html;
             }else{
-                resultsCount = resultsCount > response.total_count ? response.total_count : resultsCount;
                 document.getElementById("results").style.fontSize="14px";
                 for (var i = 0; i < resultsCount; ++i){
                     imgs[i] = doc.getElementById("result_"+i+"_image").src;
@@ -562,7 +561,6 @@ $(document).ready(function() {
 
         // INITIATING THE VARIABLES
         var cont = $(this).attr('name');
-        var sav = $(this);
         var selecActi = $(this).parent().parent().children().eq(1).children().eq(0);
         // IF AUTO STORAGE IS ON
         if($('#auto').is(':checked')){
@@ -576,7 +574,7 @@ $(document).ready(function() {
             $(".modal_delete_link").on("click", function(){
                 selecActi.prop('checked', false);
                 selecActi.change();
-                deleteItemFromList(sav);
+                deleteItemFromList(cont);
             });
 
             // SHOW THE MODAL TO CONFIRM
@@ -587,7 +585,7 @@ $(document).ready(function() {
             // UNCHECK THE CHECKBOX TO DEACTIVATE THE PRICE CHECKER AND DELETE IT FROM THE LIST
             selecActi.prop('checked', false);
             selecActi.change();
-            deleteItemFromList($(this));
+            deleteItemFromList(cont);
         }
     });
 
