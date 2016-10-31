@@ -22,6 +22,7 @@ Full How-To available in the app itself. "Help" is what you want to click.
 
 ## History
 30/09/16 - Release.
+
 31/10/16 - Updated to run locally without a server.
 
 ## License
